@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class HelloController {
 
-    @RpcReference(version = "version1", group = "test1")
+    @RpcReference(version = "version1", group = "test1") // 用在这个字段上；
     private HelloService helloService;
 
     public void test() throws InterruptedException {

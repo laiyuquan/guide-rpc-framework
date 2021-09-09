@@ -97,6 +97,8 @@ public final class NettyRpcClient implements RpcRequestTransport {
     public Object sendRpcRequest(RpcRequest rpcRequest) {
         // build return value
         CompletableFuture<RpcResponse<Object>> resultFuture = new CompletableFuture<>();
+
+
         // get server address
         InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest);
         // get  server address related channel

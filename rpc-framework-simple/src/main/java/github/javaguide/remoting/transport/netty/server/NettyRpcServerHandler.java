@@ -42,9 +42,15 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
             if (msg instanceof RpcMessage) {
                 log.info("server receive msg: [{}] ", msg);
                 byte messageType = ((RpcMessage) msg).getMessageType();
+
+
+                //这里其实是 new 一个 responseMessage
                 RpcMessage rpcMessage = new RpcMessage();
+
+
                 rpcMessage.setCodec(SerializationTypeEnum.PROTOSTUFF.getCode());
                 rpcMessage.setCompress(CompressTypeEnum.GZIP.getCode());
+
                 if (messageType == RpcConstants.HEARTBEAT_REQUEST_TYPE) {
                     rpcMessage.setMessageType(RpcConstants.HEARTBEAT_RESPONSE_TYPE);
                     rpcMessage.setData(RpcConstants.PONG);
@@ -53,7 +59,9 @@ public class NettyRpcServerHandler extends ChannelInboundHandlerAdapter {
                     // Execute the target method (the method the client needs to execute) and return the method result
                     Object result = rpcRequestHandler.handle(rpcRequest);
                     log.info(String.format("server get result: %s", result.toString()));
-                    rpcMessage.setMessageType(RpcConstants.RESPONSE_TYPE);
+
+                    rpcMessage.setMessageType(RpcConstants.RESPONSE_TYPE); //返回的值
+
                     if (ctx.channel().isActive() && ctx.channel().isWritable()) {
                         RpcResponse<Object> rpcResponse = RpcResponse.success(result, rpcRequest.getRequestId());
                         rpcMessage.setData(rpcResponse);

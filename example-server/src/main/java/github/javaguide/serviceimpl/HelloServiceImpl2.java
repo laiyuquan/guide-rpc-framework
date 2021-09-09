@@ -2,6 +2,7 @@ package github.javaguide.serviceimpl;
 
 import github.javaguide.Hello;
 import github.javaguide.HelloService;
+import github.javaguide.annotation.RpcService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
  * @createTime 2020年05月10日 07:52:00
  */
 @Slf4j
+@RpcService(version = "test2",group = "version2") //用在类上
 public class HelloServiceImpl2 implements HelloService {
 
     static {

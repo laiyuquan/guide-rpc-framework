@@ -96,10 +96,14 @@ public class RpcMessageDecoder extends LengthFieldBasedFrameDecoder {
         byte codecType = in.readByte();
         byte compressType = in.readByte();
         int requestId = in.readInt();
+
+        //这里就是 在new rpcMessage 对象；
         RpcMessage rpcMessage = RpcMessage.builder()
                 .codec(codecType)
                 .requestId(requestId)
                 .messageType(messageType).build();
+        //
+
         if (messageType == RpcConstants.HEARTBEAT_REQUEST_TYPE) {
             rpcMessage.setData(RpcConstants.PING);
             return rpcMessage;

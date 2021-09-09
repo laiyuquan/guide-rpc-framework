@@ -42,6 +42,7 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
             log.info("[{}] is annotated with  [{}]", bean.getClass().getName(), RpcService.class.getCanonicalName());
             // get RpcService annotation
             RpcService rpcService = bean.getClass().getAnnotation(RpcService.class);
+
             // build RpcServiceProperties
             RpcServiceConfig rpcServiceConfig = RpcServiceConfig.builder()
                     .group(rpcService.group())
@@ -55,16 +56,25 @@ public class SpringBeanPostProcessor implements BeanPostProcessor {
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         Class<?> targetClass = bean.getClass();
-        Field[] declaredFields = targetClass.getDeclaredFields();
+        Field[] declaredFields = targetClass.getDeclaredFields(); //获取自己声明的各种字段  因为rpcReference 是注解在字段上的；
         for (Field declaredField : declaredFields) {
             RpcReference rpcReference = declaredField.getAnnotation(RpcReference.class);
             if (rpcReference != null) {
+
                 RpcServiceConfig rpcServiceConfig = RpcServiceConfig.builder()
                         .group(rpcReference.group())
                         .version(rpcReference.version()).build();
+
                 RpcClientProxy rpcClientProxy = new RpcClientProxy(rpcClient, rpcServiceConfig);
+
+                Class<?> type = declaredField.getType();
+
+
+
                 Object clientProxy = rpcClientProxy.getProxy(declaredField.getType());
+
                 declaredField.setAccessible(true);
+
                 try {
                     declaredField.set(bean, clientProxy);
                 } catch (IllegalAccessException e) {

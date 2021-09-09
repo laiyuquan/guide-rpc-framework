@@ -53,7 +53,7 @@ public class RpcClientProxy implements InvocationHandler {
      */
     @SuppressWarnings("unchecked")
     public <T> T getProxy(Class<T> clazz) {
-        return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, this);
+        return (T) Proxy.newProxyInstance(clazz.getClassLoader(), new Class<?>[]{clazz}, this); //这个this 代表的是一个对象
     }
 
     /**
@@ -65,19 +65,28 @@ public class RpcClientProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) {
         log.info("invoked method: [{}]", method.getName());
+
         RpcRequest rpcRequest = RpcRequest.builder().methodName(method.getName())
                 .parameters(args)
-                .interfaceName(method.getDeclaringClass().getName())
+                .interfaceName(method.getDeclaringClass().getName()) //TODO
                 .paramTypes(method.getParameterTypes())
                 .requestId(UUID.randomUUID().toString())
                 .group(rpcServiceConfig.getGroup())
                 .version(rpcServiceConfig.getVersion())
                 .build();
+
+
         RpcResponse<Object> rpcResponse = null;
+
         if (rpcRequestTransport instanceof NettyRpcClient) {
             CompletableFuture<RpcResponse<Object>> completableFuture = (CompletableFuture<RpcResponse<Object>>) rpcRequestTransport.sendRpcRequest(rpcRequest);
             rpcResponse = completableFuture.get();
+
+
         }
+
+
+
         if (rpcRequestTransport instanceof SocketRpcClient) {
             rpcResponse = (RpcResponse<Object>) rpcRequestTransport.sendRpcRequest(rpcRequest);
         }
